@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# ºËĞÄ·ÖÎöÄ£¿é£ºÕû¸öÎÄ¼şÖ»ÄÜÓĞÒ»¸ö analyzer-core
+# ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½Ä£ï¿½é£ºï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Ö»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ analyzer-core
 add_library(analyzer-core
     src/scanner.cpp
     src/parser.cpp
@@ -27,7 +27,9 @@ target_include_directories(analyzer-core
         ${PROJECT_SOURCE_DIR}/include
 )
 
-# Ö÷³ÌĞò
+find_package(Threads REQUIRED)
+
+# ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 add_executable(linux-comment-analyzer
     src/main.cpp
 )
@@ -35,12 +37,13 @@ add_executable(linux-comment-analyzer
 target_link_libraries(linux-comment-analyzer
     PRIVATE
         analyzer-core
+        Threads::Threads
 )
 
-# ÆôÓÃ²âÊÔ
+# ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½
 enable_testing()
 
-# ½âÎöÆ÷²âÊÔ
+# ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 add_executable(parser-tests
     tests/parser_test.cpp
 )
@@ -60,7 +63,7 @@ add_test(
     COMMAND parser-tests
 )
 
-# Í³¼ÆÄ£¿é²âÊÔ
+# Í³ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½
 add_executable(statistics-tests
     tests/statistics_test.cpp
 )
@@ -75,7 +78,7 @@ add_test(
     COMMAND statistics-tests
 )
 
-# É¨ÃèÆ÷²âÊÔ
+# É¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 add_executable(scanner-tests
     tests/scanner_test.cpp
 )
@@ -95,7 +98,7 @@ add_test(
     COMMAND scanner-tests
 )
 
-# JSONL Êä³öÄ£¿é²âÊÔ
+# JSONL ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½
 add_executable(writer-tests
     tests/writer_test.cpp
 )
@@ -110,7 +113,7 @@ add_test(
     COMMAND writer-tests
 )
 
-# Python ×¢ÊÍ½âÎöÆ÷²âÊÔ
+# Python ×¢ï¿½Í½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 add_executable(python-parser-tests
     tests/python_parser_test.cpp
 )
@@ -130,7 +133,7 @@ add_test(
     COMMAND python-parser-tests
 )
 
-# Shell ×¢ÊÍ½âÎöÆ÷²âÊÔ
+# Shell ×¢ï¿½Í½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 add_executable(shell-parser-tests
     tests/shell_parser_test.cpp
 )
@@ -186,4 +189,12 @@ target_compile_definitions(assembly-parser-tests
 add_test(
     NAME AssemblyParserTests
     COMMAND assembly-parser-tests
+)
+
+add_test(
+    NAME ParallelSummaryTest
+    COMMAND linux-comment-analyzer
+        "${PROJECT_SOURCE_DIR}/tests/fixtures"
+        --summary-only
+        --threads 4
 )
