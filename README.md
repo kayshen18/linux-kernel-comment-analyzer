@@ -1,89 +1,55 @@
 # Linux Kernel Comment Analyzer
+[![CMake CI](https://github.com/kayshen18/linux-kernel-comment-analyzer/actions/workflows/cmake.yml/badge.svg)](https://github.com/kayshen18/linux-kernel-comment-analyzer/actions/workflows/cmake.yml)
 
-A C++17 static-analysis tool for extracting and analyzing source-code
-comments from large, heterogeneous codebases.
+A multithreaded tool for extracting comments and measuring comment density in large source-code repositories.
 
-The analyzer was evaluated on the Linux 6.12.38 source tree. It supports
-C/C++-style source files, assembly, Python, Shell, and Makefiles, and
-produces both aggregate metrics and structured JSONL output.
+Evaluated on Linux 6.12.38: **65,518 files**, **35.4M lines**, and **2.31M extracted comment blocks**.
 
 ## Features
 
-- Recursively scans large source-code directories using `std::filesystem`.
-- Supports C/C++, assembly, Python, Shell, and Makefiles.
-- Uses language-aware state machines instead of simple regular expressions.
-- Distinguishes comments from string literals and character literals.
-- Recognizes standalone, block, and inline comments.
-- Handles language-specific constructs, including:
-  - C/C++ escaped strings and block comments.
-  - Python quoted and triple-quoted strings.
-  - Shell shebangs, quoted strings, and word-internal `#` characters.
-  - Makefile recipes and escaped `\#` characters.
-  - Architecture-dependent assembly comment symbols.
-  - Assembly preprocessor directives such as `#define` and `#include`.
-- Computes metrics by language and top-level source directory.
-- Exports comment records as streaming JSONL.
-- Supports a summary-only mode without writing the extracted comment corpus.
+- Supports C/C++, Assembly, Python, Shell, and Makefile
+- Uses language-aware state machines to handle strings and escaped characters
+- Extracts line, block, and inline comments
+- Reports metrics by language and top-level directory
+- Exports structured JSONL records
+- Supports configurable multithreading and summary-only analysis
+- Includes nine automated CTest tests
 
-## Architecture
+## Pipeline
 
 ```text
-Source directory
-       |
-       v
-+------------------+
-| SourceScanner    |
-| File discovery   |
-+------------------+
-       |
-       v
-+------------------------------+
-| Language-specific parsers    |
-|                              |
-| CFamilyParser                |
-| AssemblyParser               |
-| PythonParser                 |
-| ShellParser                  |
-| MakefileParser               |
-+------------------------------+
-       |
-       v
-+------------------+
-| ParseResult      |
-| Unified records  |
-+------------------+
-       |
-       +----------------------+
-       |                      |
-       v                      v
-+------------------+   +------------------+
-| Statistics       |   | JsonlWriter      |
-| Language/dirs    |   | Structured data  |
-+------------------+   +------------------+
+SourceScanner
+     ¡ý
+Language-specific parsers
+     ¡ý
+ParseResult
+     ©À©¤©¤ Statistics
+     ©¸©¤©¤ JSONL output
 ```
 
 ## Build and test
 
 ```powershell
 cmake --build .\out\build\x64-Release
-ctest --test-dir .\out\build\x64-Release -C Release --output-on-failure
-```
 
-The project currently contains nine CTest checks, including parser tests for
-all supported language families and a parallel end-to-end test.
+ctest `
+    --test-dir .\out\build\x64-Release `
+    -C Release `
+    --output-on-failure
+```
 
 ## Usage
 
-Write extracted comments to JSONL with one record per comment block:
+Extract comments to JSONL:
 
 ```powershell
 .\out\build\x64-Release\linux-comment-analyzer.exe `
     .\linux-6.12.38 `
-    .\results\linux-comments.jsonl `
+    .\results\linux-comments.jsonlESH `
     --threads 16
 ```
 
-Run statistics only, without creating the large JSONL corpus:
+Run statistics only:
 
 ```powershell
 .\out\build\x64-Release\linux-comment-analyzer.exe `
@@ -92,26 +58,30 @@ Run statistics only, without creating the large JSONL corpus:
     --threads 16
 ```
 
-`--threads N` sets the number of parser workers and defaults to `1`. Each
-worker owns its parser state; only aggregation and JSONL writing are
-synchronized. JSONL record order is intentionally unspecified when more than
-one worker is used.
+## Results
 
-## Linux 6.12.38 evaluation
+Tested on the complete Linux 6.12.38 source tree:
 
-The complete source tree produced the same result at every tested thread
-count: 65,518 parsed files, no failures, 35,416,722 physical lines, and
-2,313,867 extracted comment blocks.
+| Metric | Result |
+|---|---:|
+| Parsed files | 65,518 |
+| Failed files | 0 |
+| Physical lines | 35,416,722 |
+| Comment blocks | 2,313,867 |
+| Comment density | 16.00% |
+| Valid JSONL records | 2,313,867 |
+| Manual validation | 250/250 correct |
 
-| Threads | Summary-only time | Speedup |
-|--------:|------------------:|--------:|
-| 1 | 45.863 s | 1.00x |
-| 2 | 25.109 s | 1.83x |
-| 4 | 15.998 s | 2.87x |
-| 8 | 14.423 s | 3.18x |
-| 16 | 14.092 s | 3.25x |
+### Parallel performance
 
-A 16-thread JSONL run completed in 19.792 seconds and emitted 2,313,867 valid
-JSON records (474.78 MiB). Manual validation of 250 stratified samples across
-C/C++, assembly, Python, Shell, and Makefile comments found 250 correct
-extractions.
+| Threads | Time | Speedup |
+|---:|---:|---:|
+| 1 | 45.863 s | 1.00¡Á |
+| 2 | 25.109 s | 1.83¡Á |
+| 4 | 15.998 s | 2.87¡Á |
+| 8 | 14.423 s | 3.18¡Á |
+| 16 | 14.092 s | 3.25¡Á |
+
+The 16-thread JSONL run completed in **19.792 seconds** and produced a **474.78 MiB** output file.
+
+> Manual validation results refer to a stratified sample of 250 extracted comments.
