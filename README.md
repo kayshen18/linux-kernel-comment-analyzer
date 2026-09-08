@@ -1,4 +1,4 @@
-# Linux Kernel Comment Analyzer
+ï»¿# Linux Kernel Comment Analyzer
 [![CMake CI](https://github.com/kayshen18/linux-kernel-comment-analyzer/actions/workflows/cmake.yml/badge.svg)](https://github.com/kayshen18/linux-kernel-comment-analyzer/actions/workflows/cmake.yml)
 
 A multithreaded tool for extracting comments and measuring comment density in large source-code repositories.
@@ -19,12 +19,12 @@ Evaluated on Linux 6.12.38: **65,518 files**, **35.4M lines**, and **2.31M extra
 
 ```text
 SourceScanner
-     ¡ý
+     â†“
 Language-specific parsers
-     ¡ý
+     â†“
 ParseResult
-     ©À©¤©¤ Statistics
-     ©¸©¤©¤ JSONL output
+     â”œâ”€â”€ Statistics
+     â””â”€â”€ JSONL output
 ```
 
 ## Build and test
@@ -76,11 +76,11 @@ Tested on the complete Linux 6.12.38 source tree:
 
 | Threads | Time | Speedup |
 |---:|---:|---:|
-| 1 | 45.863 s | 1.00¡Á |
-| 2 | 25.109 s | 1.83¡Á |
-| 4 | 15.998 s | 2.87¡Á |
-| 8 | 14.423 s | 3.18¡Á |
-| 16 | 14.092 s | 3.25¡Á |
+| 1 | 45.863 s | 1.00Ã— |
+| 2 | 25.109 s | 1.83Ã— |
+| 4 | 15.998 s | 2.87Ã— |
+| 8 | 14.423 s | 3.18Ã— |
+| 16 | 14.092 s | 3.25Ã— |
 
 The 16-thread JSONL run completed in **19.792 seconds** and produced a **474.78 MiB** output file.
 
