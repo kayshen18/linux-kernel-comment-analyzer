@@ -1,0 +1,41 @@
+# Visual Studio files
+.vs/
+*.user
+*.suo
+
+# CMake build directories
+/out/
+/build/
+/cmake-build-*/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+
+# Local Visual Studio CMake configuration
+# This file may contain machine-specific compiler or vcpkg paths.
+CMakeSettings.json
+
+# Downloaded Linux kernel source
+/linux-6.12.38/
+
+# Generated analysis results
+/results/*
+!/results/.gitkeep
+
+# Compiled binaries
+*.exe
+*.obj
+*.o
+*.lib
+*.dll
+*.pdb
+*.ilk
+
+# Temporary files
+*.tmp
+*.log
+*~
